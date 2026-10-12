@@ -114,3 +114,36 @@
 
 7. **Non-obvious decisions are recorded** under a "Decisions" heading
    in the relevant spec, with the reason for each.
+## Code and configuration principles
+
+1. **Settings live in configuration, not code.** The company list,
+   sources, schedule, file paths, catalog, and schema names are all
+   kept in config files in the repo.
+   *Why:* adding a company after v1 should be a one-line config
+   change, not a code change.
+
+2. **One codebase for dev and prod.** The same code runs in both;
+   only the config changes.
+
+3. **Secrets never appear in code or Git.** They are stored in
+   Databricks secret scopes.
+   *Why:* anything pushed to GitHub should be treated as public.
+
+4. **All names follow `specs/conventions.md`:** catalogs, schemas,
+   tables, columns, and files.
+
+5. **Each source has its own code.** Each source gets its own parsing
+   module because sources return different shapes. Shared logic
+   (logging, writing, checks) lives in `common/`.
+
+6. **Transformations are pure functions.** Each one takes a DataFrame
+   and returns a DataFrame. No API calls, table reads, or table writes
+   happen inside a transformation.
+   *Why:* pure functions can be tested in seconds on sample data.
+
+7. **Tests use fixtures, never live systems.** Tests run on saved
+   sample API responses in `tests/`, never against the live API or
+   real tables.
+
+8. **Pipeline code lives in `.py` files.** Notebooks are only for
+   exploring and experimenting, in dev.
