@@ -78,3 +78,39 @@
    rows failed, expected, actual, message, timestamp in UTC), plus one
    summary row per run.
    *Why:* "7 successful runs in a row" must be provable, not felt.
+
+   ## Process principles
+
+1. **No code without a spec.** If a change alters what the pipeline
+   does, the spec is updated first. If a change only fixes code to
+   match the existing spec (e.g. a column name typo), no spec change
+   is needed.
+
+2. **The spec is the source of truth.** Spec and code must never
+   disagree; if they do, the code is fixed. If building reveals the
+   spec itself is wrong, work stops and the problem is reported with
+   evidence that can be checked (e.g. the raw record or query result).
+   Only then is the spec updated, by me.
+
+3. **A feature is done when its validation passes** on real data,
+   not when the code runs without errors.
+
+4. **Rules for Claude Code:**
+   - Read the constitution and the feature's spec files before building.
+   - Work on one feature at a time.
+   - If the spec is unclear, ask; never guess.
+   - Never edit a spec file without my approval.
+   - Never commit; every change is shown to me, and I commit it.
+
+5. **Dev first, then prod.** All building and testing happens in the
+   dev schema. A feature moves to prod only after its validation passes
+   in dev. Only the scheduled pipeline writes to prod.
+   *Why:* bronze is append-only, so test data written to prod would
+   stay there permanently.
+
+6. **Git habits.** Each feature is built on its own branch. The spec
+   is committed before the code. `main` always works. Commit messages
+   say what changed.
+
+7. **Non-obvious decisions are recorded** under a "Decisions" heading
+   in the relevant spec, with the reason for each.
