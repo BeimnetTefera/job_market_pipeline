@@ -23,3 +23,22 @@ One catalog per environment, one schema per layer:
   (e.g. `silver.job_listings_quarantine`).
 - **`ops`** holds tables about the pipeline itself, not job data:
   the check log and the run summary.
+
+## 2. Table names
+
+- **Lowercase snake_case, always.**
+- **Singular nouns** from silver onward (`job_listing`, `company`, `job_skill`).
+- **Bronze:** `<source>_<entity>`, using each source's own word,
+  in the singular (`greenhouse_job`, `lever_posting`).
+- **Silver:** the entity only, with no source. History and current
+  state use suffixes:
+  - `<entity>_history`: every version, one row per entity per day
+  - `<entity>_current`: latest version of what's open now (may be a view)
+- **Gold:**
+  - `fct_<entity>` for fact tables (e.g. `fct_job_posting`)
+  - `dim_<entity>` for dimension tables (e.g. `dim_company`)
+  - `<what>_by_<dimension>` for chart-specific aggregates
+    (e.g. `skill_demand_by_role`)
+- **Quarantine:** `<table>_quarantine`, in the same schema (see section 1).
+- **No versions or dates in table names** (`_v2`, `_2026`, `_backup`).
+  History lives in rows, not in table copies.
