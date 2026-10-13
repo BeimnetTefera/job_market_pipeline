@@ -68,3 +68,28 @@ One catalog per environment, one schema per layer:
   `salary_currency`.
 - **No abbreviations and no bare SQL keywords** (`employment_type`,
   not `type`).
+
+## 4. Metadata columns
+
+Columns added by the pipeline start with an underscore, so they never
+collide with source fields and are easy to tell apart from them.
+
+**Added to every bronze row:**
+- `_source`: source system ('greenhouse' or 'lever')
+- `_company`: the company board name used in the API call
+- `_run_id`: the pipeline run that wrote the row
+- `_landing_file_path`: the landing file the row came from
+- `_fetched_at`: when the API was called (UTC)
+- `_ingested_at`: when the row was written to bronze (UTC)
+
+**Run IDs:** the Databricks job run ID when running as a scheduled
+job; a generated UUID for manual runs in dev. Every run's ID appears
+in `ops.run_summary`, and silver reads only rows from runs marked
+successful there.
+
+**In silver:**
+- `source` and `company_name` become regular columns, without the
+  underscore, because they describe the job and users filter by them.
+- `_run_id`, `_landing_file_path`, `_fetched_at`, and `_ingested_at`
+  are carried forward with the underscore, because they describe the
+  pipeline, not the job.
