@@ -42,3 +42,29 @@ One catalog per environment, one schema per layer:
 - **Quarantine:** `<table>_quarantine`, in the same schema (see section 1).
 - **No versions or dates in table names** (`_v2`, `_2026`, `_backup`).
   History lives in rows, not in table copies.
+  
+## 3. Column names
+
+- **Lowercase snake_case**, from silver onward.
+- **Bronze keeps source field names exactly as received** (e.g. Lever's
+  `createdAt`). Renaming to these conventions happens in silver.
+- **Type suffixes:**
+  - `_at`: timestamp, always UTC (e.g. `posted_at`)
+  - `_date`: date without time (e.g. `snapshot_date`)
+  - `is_` / `has_`: true or false (e.g. `is_remote`)
+  - `_count`: a number of things (e.g. `job_count`)
+  - `_url`: a link (e.g. `apply_url`)
+- **Keys:**
+  - `source_<entity>_id`: the original ID from the source, unchanged
+  - `<entity>_id`: the project's own key, unique across all sources
+- **Same meaning, same name:** a concept has one column name in every
+  table (always `company_name`, never `employer`).
+- **Derived values:** `<column>_derived_from` records where a derived
+  value came from (e.g. `seniority_derived_from` = 'title',
+  'description', or 'source_field').
+- **Missing values are NULL.** Never 'not stated', 'N/A', 'unknown',
+  or empty strings in tables; "not stated" appears only on the dashboard.
+- **Money always has its currency:** `salary_min`, `salary_max`,
+  `salary_currency`.
+- **No abbreviations and no bare SQL keywords** (`employment_type`,
+  not `type`).
